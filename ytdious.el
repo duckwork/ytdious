@@ -261,7 +261,7 @@ Argument TITLE video title."
     (with-current-buffer popup-buffer
                  (kill-region (point-min) (point-max))
                  (insert (format "\n%s\n\n" title))
-                 (insert-image image)
+                 (when image (insert-image image))
                  (help-mode)))
       (unless (get-buffer-window popup-buffer (selected-frame))
     (display-buffer-pop-up-window popup-buffer nil))))
