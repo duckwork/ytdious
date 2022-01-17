@@ -50,7 +50,7 @@
   :group 'comm)
 
 (defvar ytdious-sort-options (ring-convert-sequence-to-ring
-			   '(relevance rating upload_date view_count))
+               '(relevance rating upload_date view_count))
   "Availible sort options.")
 
 (defvar-local ytdious-sort-reverse nil
@@ -181,15 +181,15 @@ Key bindings:
   (setq ytdious-timer-buffer (current-buffer))
   (if ytdious-player-external
       (progn (ytdious-play-external)
-	     (setq ytdious-timer (run-with-timer 5 1 'ytdious--tick-continious-player)))
+         (setq ytdious-timer (run-with-timer 5 1 'ytdious--tick-continious-player)))
     (progn (ytdious-play-emms)
-	   (setq ytdious-timer (run-with-timer 7 7 'ytdious--tick-continious-player)))))
+       (setq ytdious-timer (run-with-timer 7 7 'ytdious--tick-continious-player)))))
 
 (defun ytdious-toggle-sort-direction ()
   "Toggle the sortation of the video List."
   (interactive)
   (setq ytdious-sort-reverse
-	(not ytdious-sort-reverse))
+    (not ytdious-sort-reverse))
   (defvar ytdious-skip-request)
   (let* ((ytdious-skip-request t))
     (ytdious--draw-buffer nil)))
@@ -207,17 +207,17 @@ Key bindings:
 (defun ytdious--tick-continious-player ()
   "Keep continious player running till end is reached."
   (let* ((end-reached (or (and ytdious-player-external
-			       (not (process-status "ytdious player")))
-			  (and (not ytdious-player-external)
-			       (not emms-player-playing-p)))))
+                   (not (process-status "ytdious player")))
+              (and (not ytdious-player-external)
+                   (not emms-player-playing-p)))))
     (when end-reached
       (with-current-buffer ytdious-timer-buffer
-	(ytdious-next-line)
-	(if (ytdious-pos-last-line-p)
-	    (ytdious-stop-continious)
-	  (if ytdious-player-external
-	      (ytdious-play-external)
-	    (ytdious-play-emms)))))))
+    (ytdious-next-line)
+    (if (ytdious-pos-last-line-p)
+        (ytdious-stop-continious)
+      (if ytdious-player-external
+          (ytdious-play-external)
+        (ytdious-play-emms)))))))
 
 (defun ytdious-play-emms ()
   "Play video at point in emms."
@@ -229,20 +229,20 @@ Key bindings:
   (interactive)
   (let* ((id (tabulated-list-get-id)))
     (start-process "ytdious player" "ytdious player"
-		   ytdious-player-external-command
-		   ytdious-player-external-options
-		   (concat ytdious-invidious-api-url "/watch?v=" id))))
+           ytdious-player-external-command
+           ytdious-player-external-options
+           (concat ytdious-invidious-api-url "/watch?v=" id))))
 
 (defun ytdious-show-image-asyncron ()
     "Display Thumbnail and Titel of video on point."
     (interactive)
     (if-let ((video (ytdious-get-current-video))
-	     (id    (ytdious-video-id-fun video))
-	     (title (assoc-default 'title video)))
-	(url-retrieve
-	 (format "%s/vi/%s/mqdefault.jpg"
-		 ytdious-invidious-api-url id)
-	 'ytdious-display-video-detail-popup (list title) t)))
+         (id    (ytdious-video-id-fun video))
+         (title (assoc-default 'title video)))
+    (url-retrieve
+     (format "%s/vi/%s/mqdefault.jpg"
+         ytdious-invidious-api-url id)
+     'ytdious-display-video-detail-popup (list title) t)))
 
 (defun ytdious-display-video-detail-popup (_status title)
     "Create or raise popup-buffer with video details.
@@ -250,21 +250,21 @@ Argument _STATUS event lists of http request
 for further details look at `url-retrieve'.
 Argument TITLE video title."
     (let* ((buffer (current-buffer))
-	   (buf-name "ytdious: Video Details")
-	   (popup-buffer (get-buffer-create buf-name))
-	   (data (with-current-buffer buffer
-		   (search-forward "\n\n")
-		   (buffer-substring (point) (point-max))))
-	   (image (create-image data nil t)))
+       (buf-name "ytdious: Video Details")
+       (popup-buffer (get-buffer-create buf-name))
+       (data (with-current-buffer buffer
+           (search-forward "\n\n")
+           (buffer-substring (point) (point-max))))
+       (image (create-image data nil t)))
       (kill-buffer buffer)
       (let* ((inhibit-read-only t))
-	(with-current-buffer popup-buffer
-			     (kill-region (point-min) (point-max))
-			     (insert (format "\n%s\n\n" title))
-			     (insert-image image)
-			     (help-mode)))
+    (with-current-buffer popup-buffer
+                 (kill-region (point-min) (point-max))
+                 (insert (format "\n%s\n\n" title))
+                 (insert-image image)
+                 (help-mode)))
       (unless (get-buffer-window popup-buffer (selected-frame))
-	(display-buffer-pop-up-window popup-buffer nil))))
+    (display-buffer-pop-up-window popup-buffer nil))))
 
 (defun ytdious-next-line ()
   "Wrapper for the `next-line' function."
@@ -283,7 +283,7 @@ Argument TITLE video title."
   (interactive)
   (if-let ((popup (get-buffer "ytdious: Video Details")))
       (progn (delete-window (get-buffer-window popup))
-	     (kill-buffer popup))
+         (kill-buffer popup))
     (quit-window)))
 
 (defun ytdious--format-author (name)
@@ -293,10 +293,10 @@ Argument TITLE video title."
 (defun ytdious--format-video-length (seconds)
   "Given an amount of SECONDS, format it nicely to be inserted in the *ytdious* buffer."
   (let ((formatted-string (concat (format-seconds "%.2h" seconds)
-				  ":"
-				  (format-seconds "%.2m" (mod seconds 3600))
-				  ":"
-				  (format-seconds "%.2s" (mod seconds 60)))))
+                  ":"
+                  (format-seconds "%.2m" (mod seconds 3600))
+                  ":"
+                  (format-seconds "%.2s" (mod seconds 60)))))
     (propertize formatted-string 'face 'ytdious-video-length-face)))
 
 (defun ytdious--format-video-views (views)
@@ -306,16 +306,16 @@ Argument TITLE video title."
 (defun ytdious--format-video-published (published)
   "Format video PUBLISHED date to be inserted in the *ytdious* buffer."
   (propertize (format-time-string ytdious-published-date-time-string (seconds-to-time published))
-	      'face 'ytdious-video-published-face))
+          'face 'ytdious-video-published-face))
 
 (defun ytdious--create-entry (video)
   "Create tabulated-list VIDEO entry."
   (list (assoc-default 'videoId video)
-	(vector (ytdious--format-video-published (assoc-default 'published video))
-		(ytdious--format-author (assoc-default 'author video))
-		(ytdious--format-video-length (assoc-default 'lengthSeconds video))
-		(assoc-default 'title video)
-		(ytdious--format-video-views (assoc-default 'viewCount video)))))
+    (vector (ytdious--format-video-published (assoc-default 'published video))
+        (ytdious--format-author (assoc-default 'author video))
+        (ytdious--format-video-length (assoc-default 'lengthSeconds video))
+        (assoc-default 'title video)
+        (ytdious--format-video-views (assoc-default 'viewCount video)))))
 
 (defun ytdious--draw-buffer (&optional _arg _noconfirm)
   "Draw a list of videos.
@@ -323,43 +323,43 @@ Optional argument _ARG revert expects this param.
 Optional argument _NOCONFIRM revert expects this param."
   (interactive)
   (let* ((title (or ytdious-channel ytdious-search-term))
-	 (page-number (propertize (number-to-string ytdious-current-page)
-				  'face 'ytdious-video-published-face))
-	 (date-limit (propertize (symbol-name ytdious-date-criterion)
-				 'face 'ytdious-video-published-face))
-	 (sort-strings '(upload_date "date" view_count "views"
-				     rating "rating" relevance "relevance"))
-	 (sort-limit (propertize (plist-get sort-strings ytdious-sort-criterion)
-				 'face 'ytdious-video-published-face)))
+     (page-number (propertize (number-to-string ytdious-current-page)
+                  'face 'ytdious-video-published-face))
+     (date-limit (propertize (symbol-name ytdious-date-criterion)
+                 'face 'ytdious-video-published-face))
+     (sort-strings '(upload_date "date" view_count "views"
+                     rating "rating" relevance "relevance"))
+     (sort-limit (propertize (plist-get sort-strings ytdious-sort-criterion)
+                 'face 'ytdious-video-published-face)))
     (setq tabulated-list-format `[("Date" 10 t)
-				  ("Author" ,ytdious-author-name-reserved-space t)
-				  ("Length" 8 t) ("Title"  ,ytdious-title-video-reserved-space t)
-				  ("Views" 10 nil . (:right-align t))])
+                  ("Author" ,ytdious-author-name-reserved-space t)
+                  ("Length" 8 t) ("Title"  ,ytdious-title-video-reserved-space t)
+                  ("Views" 10 nil . (:right-align t))])
     (unless (boundp 'ytdious-skip-request)
       (setf ytdious-videos
-	    (funcall
-	     (if ytdious-channel 'ytdious--query-channel 'ytdious--query)
-	     title)))
+        (funcall
+         (if ytdious-channel 'ytdious--query-channel 'ytdious--query)
+         title)))
     (let* ((title-string
-	    (propertize
-	     (apply 'format "[%s: %s]"
-		    (if ytdious-channel
-			(list "CHAN"
-			      (assoc-default 'author
-					     (seq-first ytdious-videos)))
-		      (list "SRCH" title)))
-	     'face 'ytdious-video-published-face))
-	   (new-buffer-name (format "ytdious %s" title-string)))
+        (propertize
+         (apply 'format "[%s: %s]"
+            (if ytdious-channel
+            (list "CHAN"
+                  (assoc-default 'author
+                         (seq-first ytdious-videos)))
+              (list "SRCH" title)))
+         'face 'ytdious-video-published-face))
+       (new-buffer-name (format "ytdious %s" title-string)))
       (if (get-buffer new-buffer-name)
-	  (switch-to-buffer (get-buffer-create new-buffer-name))
-	(rename-buffer new-buffer-name)))
+      (switch-to-buffer (get-buffer-create new-buffer-name))
+    (rename-buffer new-buffer-name)))
     (setq-local mode-line-misc-info `(("page:" ,page-number)
-				      (" date:" ,date-limit)
-				      (" sort:" ,sort-limit)))
+                      (" date:" ,date-limit)
+                      (" sort:" ,sort-limit)))
     (setq tabulated-list-entries
-	  (mapcar #'ytdious--create-entry
-		  (if ytdious-sort-reverse (reverse ytdious-videos)
-		    ytdious-videos)))
+      (mapcar #'ytdious--create-entry
+          (if ytdious-sort-reverse (reverse ytdious-videos)
+            ytdious-videos)))
     (tabulated-list-init-header)
     (tabulated-list-print)
     (ytdious-show-image-asyncron)))
@@ -367,10 +367,10 @@ Optional argument _NOCONFIRM revert expects this param."
 (defun ytdious--query (string)
   "Query youtube for STRING."
   (let ((videos (ytdious--API-call "search" `(("q" ,string)
-					   ("date" ,(symbol-name ytdious-date-criterion))
+                       ("date" ,(symbol-name ytdious-date-criterion))
                                            ("sort_by" ,(symbol-name ytdious-sort-criterion))
-					   ("page" ,ytdious-current-page)
-					   ("fields" ,ytdious-invidious-default-query-fields)))))
+                       ("page" ,ytdious-current-page)
+                       ("fields" ,ytdious-invidious-default-query-fields)))))
     videos))
 
 (defun ytdious--query-channel (string)
@@ -383,15 +383,15 @@ Optional argument _NOCONFIRM revert expects this param."
   (interactive "sSearch terms: ")
   (setf ytdious-current-page 1)
   (let* ((query-words (split-string query))
-	 (terms (seq-group-by (lambda (elem)
-				(numberp (string-match-p ":" elem)))
-			      query-words)))
+     (terms (seq-group-by (lambda (elem)
+                (numberp (string-match-p ":" elem)))
+                  query-words)))
     (setq-local ytdious-search-term
-	  (string-join (assoc-default nil terms) " "))
+      (string-join (assoc-default nil terms) " "))
     (if-let ((date (seq-find
-		    (lambda (s) (string-prefix-p "date:" s) )
-		    (assoc-default t terms))))
-	(setf ytdious-date-criterion (intern (substring date 5)))
+            (lambda (s) (string-prefix-p "date:" s) )
+            (assoc-default t terms))))
+    (setf ytdious-date-criterion (intern (substring date 5)))
       (setf ytdious-date-criterion 'all)))
   (setf ytdious-channel 'nil)
   (ytdious--draw-buffer))
@@ -427,7 +427,7 @@ Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
   (let* ((circle (if reverse 'ring-previous 'ring-next)))
     (setf ytdious-sort-criterion
-	  (funcall circle ytdious-sort-options ytdious-sort-criterion)))
+      (funcall circle ytdious-sort-options ytdious-sort-criterion)))
   (ytdious--draw-buffer))
 
 (defun ytdious-rotate-sort-backwards ()
@@ -441,7 +441,7 @@ Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
   (let* ((circle (if reverse 'ring-previous 'ring-next)))
     (setf ytdious-date-criterion
-	  (funcall circle ytdious-date-options ytdious-date-criterion)))
+      (funcall circle ytdious-date-options ytdious-date-criterion)))
   (ytdious--draw-buffer))
 
 (defun ytdious-rotate-date-backwards ()
@@ -454,10 +454,10 @@ Optional argument REVERSE reverses the direction of the rotation."
   "Search youtube for marked region."
   (interactive)
   (let* ((query
-	  (buffer-substring-no-properties
-	   (region-beginning)
-	   (region-end)))
-	 (ytdious-search-term query))
+      (buffer-substring-no-properties
+       (region-beginning)
+       (region-end)))
+     (ytdious-search-term query))
     (switch-to-buffer (ytdious-buffer))
     (unless (eq major-mode 'ytdious-mode)
       (ytdious-mode))
@@ -480,9 +480,9 @@ Optional argument REVERSE reverses the direction of the rotation."
   "Get the currently selected video."
   (unless (ytdious-pos-last-line-p)
     (seq-find (lambda (video)
-		(equal (tabulated-list-get-id)
-		       (assoc-default 'videoId video)))
-	      ytdious-videos)))
+        (equal (tabulated-list-get-id)
+               (assoc-default 'videoId video)))
+          ytdious-videos)))
 
 (defun ytdious-buffer ()
   "Name for the main ytdious buffer."
@@ -508,15 +508,15 @@ zero exit code otherwise the request body is parsed by `json-read' and returned.
 Optional argument UCID of the channel which video you want to see."
   (with-temp-buffer
     (let ((exit-code (call-process "curl" nil t nil
-				   "--silent"
-				   "-X" "GET"
-				   (concat ytdious-invidious-api-url
-					   "/api/v1/"
-					   method
-					   (when ucid (format "/%s%s" ucid "?sort_by=newest"))
-					   (when args (concat "?" (url-build-query-string args)))))))
+                   "--silent"
+                   "-X" "GET"
+                   (concat ytdious-invidious-api-url
+                       "/api/v1/"
+                       method
+                       (when ucid (format "/%s%s" ucid "?sort_by=newest"))
+                       (when args (concat "?" (url-build-query-string args)))))))
       (unless (= exit-code 0)
-	(error "Curl had problems connecting to Invidious"))
+    (error "Curl had problems connecting to Invidious"))
       (goto-char (point-min))
       (json-read))))
 
